@@ -102,14 +102,20 @@ def absurl(url, relative_to=None):
                 "Cannot build an absolute file URL from a relative"
                 " path without a reference!"
             )
-        if reference.scheme not in (None, "", "file"):
-            raise ResolutionError(
-                "Cannot build an absolute file URL with a non-file" " reference!"
-            )
-
-        result_list = list(parsed)
-        result_list[0] = "file"  # in case it was empty
-        result_list[2] = abspath(from_posix(parsed.path), from_posix(reference.path))
+        if reference.scheme in (None, "", "file"):
+            result_list = list(parsed)
+            result_list[0] = "file"  # in case it was empty
+            result_list[2] = abspath(from_posix(parsed.path),
+                                     from_posix(reference.path))
+        elif reference.scheme in ("http", "https") and parsed.path not in (None, "", "/"):
+            result_list = list(parsed)
+            result_list[0] = result_list[0] or reference.scheme
+            result_list[1] = result_list[1] or reference.netloc
+            result_list[2] = abspath(from_posix(parsed.path),
+                                     from_posix(reference.path))
+        else:
+            raise ResolutionError('Cannot build an absolute file URL with a non-file'
+                                  ' reference!')
 
     # Reassemble the result and return it
     result = parse.ParseResult(*result_list)

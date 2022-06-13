@@ -7,7 +7,7 @@ agree to abide by the project [code of conduct].
 
 Fork, then clone the repo:
 
-    git clone git@github.com:your-username/prance.git
+    git clone git@github.com:your-username/prance.git --recurse-submodules
 
 ## Setup
 
